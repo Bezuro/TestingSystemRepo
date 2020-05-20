@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrueMessageDLL", "TrueMessageDLL\TrueMessageDLL.csproj", "{6ADA5A89-D0C5-40F1-B367-07789796E898}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyListViewObjects", "MyListViewObjects\MyListViewObjects.csproj", "{AD6A7436-8C6E-4D16-9486-DAF031346F01}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{6ADA5A89-D0C5-40F1-B367-07789796E898}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6ADA5A89-D0C5-40F1-B367-07789796E898}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6ADA5A89-D0C5-40F1-B367-07789796E898}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD6A7436-8C6E-4D16-9486-DAF031346F01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD6A7436-8C6E-4D16-9486-DAF031346F01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD6A7436-8C6E-4D16-9486-DAF031346F01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD6A7436-8C6E-4D16-9486-DAF031346F01}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

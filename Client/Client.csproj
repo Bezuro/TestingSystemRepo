@@ -116,6 +116,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MyListViewObjects\MyListViewObjects.csproj">
+      <Project>{AD6A7436-8C6E-4D16-9486-DAF031346F01}</Project>
+      <Name>MyListViewObjects</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TrueMessageDLL\TrueMessageDLL.csproj">
       <Project>{6ada5a89-d0c5-40f1-b367-07789796e898}</Project>
       <Name>TrueMessageDLL</Name>

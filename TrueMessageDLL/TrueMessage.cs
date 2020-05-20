@@ -14,6 +14,9 @@ namespace TrueMessageDLL
 
         LogIn,
         Connect,
+        AdminConnect,
+        TeacherConnect,
+        StudentConnect,
         Disconnect,
 
         LoadCurrentTest,

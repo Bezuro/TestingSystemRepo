@@ -14,6 +14,7 @@ using System.IO;
 using System.Data.SqlClient;
 using System.Data;
 using Server.Model;
+using MyListViewObjects;
 
 namespace Server
 {
@@ -83,7 +84,93 @@ namespace Server
                 {
                     LogIn(tcpClient, trueMessage);
                 }
+                else if (trueMessage.Command == Command.AdminConnect)
+                {
+                    AdminConnect(tcpClient, trueMessage);
+                }
             }
+        }
+
+        private void AdminConnect(TcpClient tcpClient, TrueMessage trueMessage)
+        {
+            string login = trueMessage.Login;
+            IPEndPoint clientEP = (IPEndPoint)tcpClient.Client.RemoteEndPoint;
+
+            clients.Add(login, clientEP);
+
+            Console.WriteLine($"Admin {login} connected");
+
+            SqlConnection sqlConnection = new SqlConnection(connectionString);
+            try
+            {
+                if (sqlConnection.State == ConnectionState.Closed)
+                {
+                    sqlConnection.Open();
+                }
+
+                SqlCommand sqlCommand = new SqlCommand("Proc_LoadUsers", sqlConnection);
+                sqlCommand.CommandType = CommandType.StoredProcedure;
+
+                List<UserLW> users = new List<UserLW>();
+
+                using (SqlDataReader sqlReader = sqlCommand.ExecuteReader())
+                {
+                    while (sqlReader.Read())
+                    {
+                        users.Add(new UserLW
+                        {
+                            Login = Convert.ToString(sqlReader["Login"]),
+                            Password = Convert.ToString(sqlReader["Password"]),
+                            FullName = Convert.ToString(sqlReader["FullName"]),
+                            UserType = Convert.ToString(sqlReader["Type"])
+                        });
+                    }
+                }
+
+                TrueMessage trueMessageToClient = new TrueMessage();
+
+                if (users.Count <= 0)
+                {
+                    trueMessageToClient.Command = Command.Reject;
+                }
+                else
+                {
+                    trueMessageToClient.Command = Command.Approve;
+                    trueMessageToClient.Message = users.ToArray();
+                }
+
+                byte[] dataAdminConnectAnswer;
+                IFormatter formatter = new BinaryFormatter();
+
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    formatter.Serialize(stream, trueMessageToClient);
+                    dataAdminConnectAnswer = stream.ToArray();
+                }
+
+                NetworkStream networkStream = tcpClient.GetStream();
+
+                networkStream.BeginWrite(dataAdminConnectAnswer, 0, dataAdminConnectAnswer.Length, new AsyncCallback(AdminConnectAnswer), tcpClient);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                if (sqlConnection.State != ConnectionState.Closed)
+                {
+                    sqlConnection.Close();
+                }
+            }
+        }
+
+        private void AdminConnectAnswer(IAsyncResult ar)
+        {
+            TcpClient tcpClient = (TcpClient)ar.AsyncState;
+            NetworkStream networkStream = tcpClient.GetStream();
+
+            networkStream.EndWrite(ar);
         }
 
         private void LogIn(TcpClient tcpClient, TrueMessage trueMessage)
