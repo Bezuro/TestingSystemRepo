@@ -1,0 +1,43 @@
+﻿<Window x:Class="Client.UserAddWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Client"
+        mc:Ignorable="d"
+        Title="UserAddWindow" Height="420" Width="350" FontSize="14" Background="#04c582">
+    <Border Background="#2e3137" CornerRadius="20" Margin="10">
+        <StackPanel Margin="20">
+            <Label Content="Add User" Foreground="White" FontSize="25" HorizontalAlignment="Center"/>
+            <Separator/>
+            <Label Content="Login" Foreground="White"/>
+            <TextBox x:Name="LoginTextBox" Background="#545d6a" Foreground="White" FontSize="18"/>
+            <Label Content="Password" Foreground="White"/>
+            <PasswordBox x:Name="PasswordTextBox" Background="#545d6a" Foreground="White" FontSize="18"/>
+            <Label Content="FullName" Foreground="White"/>
+            <TextBox x:Name="FullNameTextBox" Background="#545d6a" Foreground="White" FontSize="18"/>
+            <Label Content="UserType" Foreground="White"/>
+            <ComboBox x:Name="UserTypeComboBox" Background="#545d6a" Foreground="White">
+                <ComboBox.ItemContainerStyle>
+                    <Style TargetType="ComboBoxItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Center" />
+                        <Setter Property="Background" Value="#545d6a"/>
+                        <Setter Property="BorderBrush" Value="#2e3137"/>
+                    </Style>
+                </ComboBox.ItemContainerStyle>
+                <TextBlock Background="#545d6a">Student</TextBlock>
+                <TextBlock Background="#545d6a">Teacher</TextBlock>
+                <TextBlock Background="#545d6a">Admin</TextBlock>
+            </ComboBox>
+            <DockPanel DockPanel.Dock="Bottom" Margin="0 15">
+                <Button x:Name="AddButton" Content="Add" DockPanel.Dock="Left" 
+                        Margin="0 0 5 0" MinWidth="70"
+                        Background="#545d6a" Foreground="White" FontSize="18" Click="AddButton_Click"></Button>
+                <Button x:Name="CancelButton" Content="Cancel" DockPanel.Dock="Right" 
+                        Margin="0 0 0 0" MinWidth="70"
+                        Background="#545d6a" Foreground="White" FontSize="18" Click="CancelButton_Click"></Button>
+                <Rectangle></Rectangle>
+            </DockPanel>
+        </StackPanel>
+    </Border>
+</Window>

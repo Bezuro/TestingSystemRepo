@@ -88,7 +88,185 @@ namespace Server
                 {
                     AdminConnect(tcpClient, trueMessage);
                 }
+                else if (trueMessage.Command == Command.AddUser)
+                {
+                    AddUser(tcpClient, trueMessage);
+                }
+                else if (trueMessage.Command == Command.DeleteUser)
+                {
+                    DeleteUser(tcpClient, trueMessage);
+                }
+                else if (trueMessage.Command == Command.Disconnect)
+                {
+                    string login = trueMessage.Login;
+
+                    clients.Remove(login);
+
+                    Console.WriteLine($"User {login} disconnected");
+                }
+
+                Console.WriteLine("456 COMMAND: " + trueMessage.Command.ToString());
+
+                byte[] dataReadMessageNew = new byte[64000];
+                (TcpClient tcpClient, byte[] dataReadMessageNew) stateReadMessageNew = (tcpClient, dataReadMessageNew);
+                stream.BeginRead(dataReadMessageNew, 0, dataReadMessageNew.Length, new AsyncCallback(ReadMessage), stateReadMessageNew);
             }
+        }
+
+        private void DeleteUser(TcpClient tcpClient, TrueMessage trueMessage)
+        {
+            Console.WriteLine("DeleteUser");
+
+            SqlConnection sqlConnection = new SqlConnection(connectionString);
+            try
+            {
+                if (sqlConnection.State == ConnectionState.Closed)
+                {
+                    sqlConnection.Open();
+                }
+
+                string userLoginToDelete = (string)trueMessage.Message;
+
+                SqlCommand sqlCommand = new SqlCommand("Proc_DeleteUser", sqlConnection);
+                sqlCommand.CommandType = CommandType.StoredProcedure;
+                sqlCommand.Parameters.AddWithValue("@Login", userLoginToDelete);
+                int count = sqlCommand.ExecuteNonQuery();
+
+                TrueMessage trueMessageToClient = new TrueMessage();
+
+                if (count == 0)
+                {
+                    trueMessageToClient.Command = Command.Reject;
+                }
+                else
+                {
+                    trueMessageToClient.Command = Command.Approve;
+                }
+
+                byte[] dataDeleteUserAnswer;
+                IFormatter formatter = new BinaryFormatter();
+
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    formatter.Serialize(stream, trueMessageToClient);
+                    dataDeleteUserAnswer = stream.ToArray();
+                }
+
+                NetworkStream networkStream = tcpClient.GetStream();
+
+                networkStream.BeginWrite(dataDeleteUserAnswer, 0, dataDeleteUserAnswer.Length, new AsyncCallback(DeleteUserAnswer), tcpClient);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                if (sqlConnection.State != ConnectionState.Closed)
+                {
+                    sqlConnection.Close();
+                }
+            }
+        }
+
+        private void DeleteUserAnswer(IAsyncResult ar)
+        {
+            TcpClient tcpClient = (TcpClient)ar.AsyncState;
+            NetworkStream networkStream = tcpClient.GetStream();
+
+            networkStream.EndWrite(ar);
+        }
+
+        private void AddUser(TcpClient tcpClient, TrueMessage trueMessage)
+        {
+            Console.WriteLine("AddUser");
+
+            SqlConnection sqlConnection = new SqlConnection(connectionString);
+            try
+            {
+                if (sqlConnection.State == ConnectionState.Closed)
+                {
+                    sqlConnection.Open();
+                }
+
+                UserLW newUser = (UserLW)trueMessage.Message;
+
+                SqlCommand sqlCommand = new SqlCommand("Proc_LoginAvailabilityCheck", sqlConnection);
+                sqlCommand.CommandType = CommandType.StoredProcedure;
+                sqlCommand.Parameters.AddWithValue("@Login", newUser.Login);
+                int count = Convert.ToInt32(sqlCommand.ExecuteScalar());
+
+                TrueMessage trueMessageToClient = new TrueMessage();
+
+                if (count == 1)
+                {
+                    Console.WriteLine("AddUserReject Login exists");
+
+                    trueMessageToClient.Command = Command.Reject;
+                    trueMessageToClient.Message = "User with that login already exists";
+                }
+                else
+                {
+                    sqlCommand = new SqlCommand("Proc_GetUserTypeId", sqlConnection);
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    sqlCommand.Parameters.AddWithValue("@UserType", newUser.UserType);
+                    int userTypeId = Convert.ToInt32(sqlCommand.ExecuteScalar());
+
+                    if (userTypeId == 0)
+                    {
+                        Console.WriteLine("AddUserReject wrong UserType");
+
+                        trueMessageToClient.Command = Command.Reject;
+                        trueMessageToClient.Message = "Wrong UserType";
+                    }
+                    else
+                    {
+                        Console.WriteLine("AddUserApprove");
+
+                        sqlCommand = new SqlCommand("Proc_AddUser", sqlConnection);
+                        sqlCommand.CommandType = CommandType.StoredProcedure;
+                        sqlCommand.Parameters.AddWithValue("@Login", newUser.Login);
+                        sqlCommand.Parameters.AddWithValue("@Password", newUser.Password);
+                        sqlCommand.Parameters.AddWithValue("@FullName", newUser.FullName);
+                        sqlCommand.Parameters.AddWithValue("@UserTypeId", userTypeId);
+                        sqlCommand.ExecuteNonQuery();
+
+                        trueMessageToClient.Command = Command.Approve;
+                    }
+                }
+
+                byte[] dataAddUserAnswer;
+                IFormatter formatter = new BinaryFormatter();
+
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    formatter.Serialize(stream, trueMessageToClient);
+                    dataAddUserAnswer = stream.ToArray();
+                }
+
+                NetworkStream networkStream = tcpClient.GetStream();
+
+                networkStream.BeginWrite(dataAddUserAnswer, 0, dataAddUserAnswer.Length, new AsyncCallback(AddUserAnswer), tcpClient);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                if (sqlConnection.State != ConnectionState.Closed)
+                {
+                    sqlConnection.Close();
+                }
+            }
+        }
+
+        private void AddUserAnswer(IAsyncResult ar)
+        {
+            TcpClient tcpClient = (TcpClient)ar.AsyncState;
+            NetworkStream networkStream = tcpClient.GetStream();
+
+            networkStream.EndWrite(ar);
         }
 
         private void AdminConnect(TcpClient tcpClient, TrueMessage trueMessage)

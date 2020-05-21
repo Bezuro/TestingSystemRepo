@@ -32,6 +32,10 @@ namespace Client
 
         public ObservableCollection<UserLW> UserList { get; set; } = new ObservableCollection<UserLW>();
 
+        UserLW lastAddedUser;
+
+        bool firstClose = true;
+
         public AdminWindow(string login)
         {
             if (login == null)
@@ -119,6 +123,184 @@ namespace Client
             {
                 MessageBox.Show("Received message from server is incorrect.", "Error");
             }
+        }
+
+        private void AddButton_Click(object sender, RoutedEventArgs e)
+        {
+            UserAddWindow userAddWindow = new UserAddWindow();
+
+            Application.Current.Dispatcher.Invoke((Action)delegate
+            {
+                userAddWindow.ShowDialog();
+
+                if (userAddWindow.UserLW != null)
+                {
+                    UserList.Add(userAddWindow.UserLW);
+                }
+
+                lastAddedUser = userAddWindow.UserLW;
+            });
+
+            TrueMessage trueMessageToServer = new TrueMessage { Command = Command.AddUser, Login = login, Message = userAddWindow.UserLW };
+
+            byte[] dataAddUserRequest;
+            IFormatter formatter = new BinaryFormatter();
+
+            using (MemoryStream stream = new MemoryStream())
+            {
+                formatter.Serialize(stream, trueMessageToServer);
+                dataAddUserRequest = stream.ToArray();
+            }
+
+            networkStream.BeginWrite(dataAddUserRequest, 0, dataAddUserRequest.Length, new AsyncCallback(AddUserRequest), null);
+        }
+
+        private void AddUserRequest(IAsyncResult ar)
+        {
+            networkStream.EndWrite(ar);
+
+            byte[] dataAddUserAnswer = new byte[1024];
+            networkStream.BeginRead(dataAddUserAnswer, 0, dataAddUserAnswer.Length, new AsyncCallback(AddUserAnswer), dataAddUserAnswer);
+        }
+
+        private void AddUserAnswer(IAsyncResult ar)
+        {
+            networkStream.EndRead(ar);
+
+            byte[] dataAddUserAnswer = (byte[])ar.AsyncState;
+
+            IFormatter formatter = new BinaryFormatter();
+            TrueMessage trueMessageFromServer = new TrueMessage();
+            using (MemoryStream memoryStream = new MemoryStream(dataAddUserAnswer))
+            {
+                trueMessageFromServer = (TrueMessage)formatter.Deserialize(memoryStream);
+            }
+
+            if (trueMessageFromServer.Command == Command.Approve)
+            {
+                MessageBox.Show("User successfully added");
+            }
+            else if (trueMessageFromServer.Command == Command.Reject)
+            {
+                Application.Current.Dispatcher.Invoke((Action)delegate
+                {
+                    UserList.Remove(lastAddedUser);
+                });
+                MessageBox.Show($"User cannot be added: {trueMessageFromServer.Message}");
+            }
+            else
+            {
+                MessageBox.Show("Received message from server is incorrect.", "Error");
+            }
+        }
+
+        private void DeleteButton_Click(object sender, RoutedEventArgs e)
+        {
+            int idx = UsersListView.SelectedIndex;
+
+            if (idx == -1)
+            {
+                return;
+            }
+
+            string userLoginToDelete = UserList[idx].Login;
+
+            UserList.Remove(UserList[idx]);
+            DeleteButton.IsEnabled = false;
+
+            TrueMessage trueMessageToServer = new TrueMessage { Command = Command.DeleteUser, Login = login, Message = userLoginToDelete };
+
+            byte[] dataDeleteUserRequest;
+            IFormatter formatter = new BinaryFormatter();
+
+            using (MemoryStream stream = new MemoryStream())
+            {
+                formatter.Serialize(stream, trueMessageToServer);
+                dataDeleteUserRequest = stream.ToArray();
+            }
+
+            networkStream.BeginWrite(dataDeleteUserRequest, 0, dataDeleteUserRequest.Length, new AsyncCallback(DeleteUserRequest), null);
+        }
+
+        private void DeleteUserRequest(IAsyncResult ar)
+        {
+            networkStream.EndWrite(ar);
+
+            byte[] dataDeleteUserAnswer = new byte[1024];
+            networkStream.BeginRead(dataDeleteUserAnswer, 0, dataDeleteUserAnswer.Length, new AsyncCallback(DeleteUserAnswer), dataDeleteUserAnswer);
+        }
+
+        private void DeleteUserAnswer(IAsyncResult ar)
+        {
+            networkStream.EndRead(ar);
+
+            byte[] dataDeleteUserAnswer = (byte[])ar.AsyncState;
+
+            IFormatter formatter = new BinaryFormatter();
+            TrueMessage trueMessageFromServer = new TrueMessage();
+            using (MemoryStream memoryStream = new MemoryStream(dataDeleteUserAnswer))
+            {
+                trueMessageFromServer = (TrueMessage)formatter.Deserialize(memoryStream);
+            }
+
+            if (trueMessageFromServer.Command == Command.Approve)
+            {
+                MessageBox.Show("User successfully deleted");
+            }
+            else if (trueMessageFromServer.Command == Command.Reject)
+            {
+                MessageBox.Show($"User cannot be deleted");
+            }
+            else
+            {
+                MessageBox.Show("Received message from server is incorrect.", "Error");
+            }
+        }
+
+        private void UsersListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            DeleteButton.IsEnabled = true;
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (firstClose)
+            {
+                this.Visibility = System.Windows.Visibility.Hidden;
+                firstClose = false;
+
+                e.Cancel = true;
+
+                TrueMessage trueMessageToServer = new TrueMessage { Command = Command.Disconnect, Login = login };
+
+                byte[] dataWriteDisconnectRequest;
+                IFormatter formatter = new BinaryFormatter();
+
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    formatter.Serialize(stream, trueMessageToServer);
+                    dataWriteDisconnectRequest = stream.ToArray();
+                }
+
+                IAsyncResult asyncResult = networkStream.BeginWrite(dataWriteDisconnectRequest, 0, dataWriteDisconnectRequest.Length, new AsyncCallback(DisconnectRequest), null);
+                asyncResult.AsyncWaitHandle.WaitOne();
+
+                Environment.Exit(0);
+            }
+        }
+
+        private void DisconnectRequest(IAsyncResult ar)
+        {
+            networkStream.EndWrite(ar);
+            Disconnect();
+        }
+
+        static void Disconnect()
+        {
+            if (networkStream != null)
+                networkStream.Close();
+            if (client != null)
+                client.Close();
         }
     }
 }
