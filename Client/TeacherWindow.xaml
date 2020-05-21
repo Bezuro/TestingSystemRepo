@@ -5,8 +5,72 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
-        Title="TeacherWindow" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+        Title="TeacherWindow" Height="600" Width="800" FontSize="14" Background="#04c582" Loaded="Window_Loaded" Closing="Window_Closing">
+    <Border Background="#2e3137" CornerRadius="10" Margin="10">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="0.11*"/>
+                <RowDefinition Height="0.11*"/>
+            </Grid.RowDefinitions>
+
+            <ListView x:Name="TestListView" SelectionChanged="TestListView_SelectionChanged"
+                      Background="#2e3137" Foreground="White" Margin="10"></ListView>
+
+            <ListView x:Name="MarkListView" Grid.Column="1"
+                      Background="#2e3137" Foreground="White" Margin="10">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Center" />
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="FullName" Width="250" DisplayMemberBinding="{Binding FullName}"/>
+                        <GridViewColumn Header="Mark" Width="100" DisplayMemberBinding="{Binding Mark}"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+            <DockPanel Grid.Row="1" Grid.ColumnSpan="2">
+                <TextBlock Text="Current test:" Margin="10 5 0 5"
+                           FontSize="25" Foreground="NavajoWhite" VerticalAlignment ="Center"></TextBlock>
+                <TextBox x:Name="CurrentTestTextBox" Margin="10 5" IsEnabled="False"
+                         Background="#545d6a" FontSize="25" 
+                         VerticalAlignment ="Center" HorizontalAlignment="Stretch"></TextBox>
+            </DockPanel>
+            <DockPanel Grid.Row="2" Grid.ColumnSpan="2">
+                <Button x:Name="AddButton" Content="Add" DockPanel.Dock="Left" Margin="10" MinWidth="70"
+                        Background="#545d6a" Foreground="White" FontSize="18"></Button>
+                <Button x:Name="DeleteButton" IsEnabled="False" Content="Delete" DockPanel.Dock="Left" Margin="10" MinWidth="70"
+                        Background="#545d6a" Foreground="White" FontSize="18"></Button>
+                <Button x:Name="ChangeButton" Content="Change" DockPanel.Dock="Left" Margin="10" MinWidth="70"
+                        Background="#545d6a" Foreground="White" FontSize="18"></Button>
+                <Button x:Name="SetCurrentButton" Content="Set current test" DockPanel.Dock="Left" Margin="10" MinWidth="70"
+                        Background="#545d6a" Foreground="White" FontSize="18"></Button>
+                <TextBlock Text="Set time:" Margin="5"
+                           FontSize="18" Foreground="NavajoWhite" VerticalAlignment ="Center"></TextBlock>
+                <ComboBox x:Name="UserTypeComboBox" Margin="5 10" Background="#545d6a" Foreground="White" MinWidth="100">
+                    <ComboBox.ItemContainerStyle>
+                        <Style TargetType="ComboBoxItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Center" />
+                            <Setter Property="Background" Value="#545d6a"/>
+                            <Setter Property="BorderBrush" Value="#2e3137"/>
+                        </Style>
+                    </ComboBox.ItemContainerStyle>
+                    <TextBlock Background="#545d6a">10 min</TextBlock>
+                    <TextBlock Background="#545d6a">20 min</TextBlock>
+                    <TextBlock Background="#545d6a">30 min</TextBlock>
+                    <TextBlock Background="#545d6a">45 min</TextBlock>
+                    <TextBlock Background="#545d6a">60 min</TextBlock>
+                </ComboBox>
+                <Button x:Name="UpdateMarksButton" IsEnabled="False" Content="Update marks" DockPanel.Dock="Right" Margin="10" MinWidth="70"
+                        Background="#545d6a" Foreground="White" FontSize="18" Click="UpdateMarksButton_Click"></Button>
+                <Rectangle></Rectangle>
+            </DockPanel>
+        </Grid>
+    </Border>
 </Window>

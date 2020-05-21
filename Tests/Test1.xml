@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+<Test xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <TestName>C# Test</TestName>
+  <Description>My old c# test</Description>
+  <Questions>
+    <QuestionText>Specify the correct order of catch sections when handling various types of exceptions.</QuestionText>
+    <Answers>
+      <AnswerText>From most likely to least likely.</AnswerText>
+      <IsRight>false</IsRight>
+      <IsChecked>false</IsChecked>
+    </Answers>
+    <Answers>
+      <AnswerText>From least likely to most likely.</AnswerText>
+      <IsRight>false</IsRight>
+      <IsChecked>false</IsChecked>
+    </Answers>
+    <Answers>
+      <AnswerText>From specific to general.</AnswerText>
+      <IsRight>true</IsRight>
+      <IsChecked>false</IsChecked>
+    </Answers>
+    <Answers>
+      <AnswerText>From general to specific.</AnswerText>
+      <IsRight>false</IsRight>
+      <IsChecked>false</IsChecked>
+    </Answers>
+    <IsAnsweredCorrectly>false</IsAnsweredCorrectly>
+    <ScoreModifier>1</ScoreModifier>
+    <IsManyAnswers>false</IsManyAnswers>
+  </Questions>
+  <Questions>
+    <QuestionText>Point out the differences between an interface and an abstract class.</QuestionText>
+    <Answers>
+      <AnswerText>Access modifiers cannot be changed in the interface.</AnswerText>
+      <IsRight>true</IsRight>
+      <IsChecked>false</IsChecked>
+    </Answers>
+    <Answers>
+      <AnswerText>Delegates cannot be declared in the interface.</AnswerText>
+      <IsRight>true</IsRight>
+      <IsChecked>false</IsChecked>
+    </Answers>
+    <Answers>
+      <AnswerText>Methods cannot be implemented in an interface.</AnswerText>
+      <IsRight>true</IsRight>
+      <IsChecked>false</IsChecked>
+    </Answers>
+    <Answers>
+      <AnswerText>Fields cannot be declared in the interface.</AnswerText>
+      <IsRight>true</IsRight>
+      <IsChecked>false</IsChecked>
+    </Answers>
+    <IsAnsweredCorrectly>false</IsAnsweredCorrectly>
+    <ScoreModifier>1.3</ScoreModifier>
+    <IsManyAnswers>true</IsManyAnswers>
+  </Questions>
+  <Questions>
+    <QuestionText>C# class can inherit multiple ________.</QuestionText>
+    <Answers>
+      <AnswerText>Classes.</AnswerText>
+      <IsRight>false</IsRight>
+      <IsChecked>false</IsChecked>
+    </Answers>
+    <Answers>
+      <AnswerText>Interfaces.</AnswerText>
+      <IsRight>true</IsRight>
+      <IsChecked>false</IsChecked>
+    </Answers>
+    <Answers>
+      <AnswerText>Abstract classes.</AnswerText>
+      <IsRight>false</IsRight>
+      <IsChecked>false</IsChecked>
+    </Answers>
+    <Answers>
+      <AnswerText>Static classes.</AnswerText>
+      <IsRight>false</IsRight>
+      <IsChecked>false</IsChecked>
+    </Answers>
+    <IsAnsweredCorrectly>false</IsAnsweredCorrectly>
+    <ScoreModifier>0.5</ScoreModifier>
+    <IsManyAnswers>true</IsManyAnswers>
+  </Questions>
+  <Questions>
+    <QuestionText>Which of the followings are value types in C#?</QuestionText>
+    <Answers>
+      <AnswerText>Double.</AnswerText>
+      <IsRight>true</IsRight>
+      <IsChecked>false</IsChecked>
+    </Answers>
+    <Answers>
+      <AnswerText>Decimal.</AnswerText>
+      <IsRight>true</IsRight>
+      <IsChecked>false</IsChecked>
+    </Answers>
+    <Answers>
+      <AnswerText>Real.</AnswerText>
+      <IsRight>false</IsRight>
+      <IsChecked>false</IsChecked>
+    </Answers>
+    <Answers>
+      <AnswerText>Float.</AnswerText>
+      <IsRight>true</IsRight>
+      <IsChecked>false</IsChecked>
+    </Answers>
+    <IsAnsweredCorrectly>false</IsAnsweredCorrectly>
+    <ScoreModifier>0.9</ScoreModifier>
+    <IsManyAnswers>true</IsManyAnswers>
+  </Questions>
+  <Questions>
+    <QuestionText>String data type is ______.</QuestionText>
+    <Answers>
+      <AnswerText>Value type.</AnswerText>
+      <IsRight>false</IsRight>
+      <IsChecked>false</IsChecked>
+    </Answers>
+    <Answers>
+      <AnswerText>Static.</AnswerText>
+      <IsRight>false</IsRight>
+      <IsChecked>false</IsChecked>
+    </Answers>
+    <Answers>
+      <AnswerText>Immutable.</AnswerText>
+      <IsRight>true</IsRight>
+      <IsChecked>false</IsChecked>
+    </Answers>
+    <Answers>
+      <AnswerText>Mutable.</AnswerText>
+      <IsRight>false</IsRight>
+      <IsChecked>false</IsChecked>
+    </Answers>
+    <IsAnsweredCorrectly>false</IsAnsweredCorrectly>
+    <ScoreModifier>0.5</ScoreModifier>
+    <IsManyAnswers>true</IsManyAnswers>
+  </Questions>
+</Test>

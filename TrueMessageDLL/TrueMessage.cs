@@ -29,6 +29,7 @@ namespace TrueMessageDLL
         DeleteTest,
         ChangeTest, //???
         ChooseCurrentTest,
+        UpdateMarks,
 
         LoadUsers,
         AddUser,

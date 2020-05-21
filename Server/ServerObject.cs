@@ -104,6 +104,14 @@ namespace Server
 
                     Console.WriteLine($"User {login} disconnected");
                 }
+                else if (trueMessage.Command == Command.TeacherConnect)
+                {
+                    TeacherConnect(tcpClient, trueMessage);
+                }
+                else if (trueMessage.Command == Command.UpdateMarks)
+                {
+                    UpdateMarks(tcpClient, trueMessage);
+                }
 
                 Console.WriteLine("456 COMMAND: " + trueMessage.Command.ToString());
 
@@ -111,6 +119,160 @@ namespace Server
                 (TcpClient tcpClient, byte[] dataReadMessageNew) stateReadMessageNew = (tcpClient, dataReadMessageNew);
                 stream.BeginRead(dataReadMessageNew, 0, dataReadMessageNew.Length, new AsyncCallback(ReadMessage), stateReadMessageNew);
             }
+        }
+
+        private void UpdateMarks(TcpClient tcpClient, TrueMessage trueMessage)
+        {
+            Console.WriteLine($"UpdateMarks");
+
+            SqlConnection sqlConnection = new SqlConnection(connectionString);
+            try
+            {
+                if (sqlConnection.State == ConnectionState.Closed)
+                {
+                    sqlConnection.Open();
+                }
+
+                string testName = (string)trueMessage.Message;
+
+                List<MarkLW> marks = new List<MarkLW>();
+
+                SqlCommand sqlCommand = new SqlCommand("Proc_GetMarksByTestName", sqlConnection);
+                sqlCommand.CommandType = CommandType.StoredProcedure;
+                sqlCommand.Parameters.AddWithValue("@Name", testName);
+
+                using (SqlDataReader sqlReader = sqlCommand.ExecuteReader())
+                {
+                    while (sqlReader.Read())
+                    {
+                        marks.Add(new MarkLW
+                        {
+                            FullName = Convert.ToString(sqlReader["FullName"]),
+                            Mark = Convert.ToInt32(sqlReader["Mark"])
+                        });
+                    }
+                }
+
+                TrueMessage trueMessageToClient = new TrueMessage();
+
+                if (marks.Count <= 0)
+                {
+                    trueMessageToClient.Command = Command.Reject;
+                }
+                else
+                {
+                    trueMessageToClient.Command = Command.Approve;
+                    trueMessageToClient.Message = marks.ToArray();
+                }
+
+                byte[] dataUpdateMarksAnswer;
+                IFormatter formatter = new BinaryFormatter();
+
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    formatter.Serialize(stream, trueMessageToClient);
+                    dataUpdateMarksAnswer = stream.ToArray();
+                }
+
+                NetworkStream networkStream = tcpClient.GetStream();
+
+                networkStream.BeginWrite(dataUpdateMarksAnswer, 0, dataUpdateMarksAnswer.Length, new AsyncCallback(UpdateMarksAnswer), tcpClient);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                if (sqlConnection.State != ConnectionState.Closed)
+                {
+                    sqlConnection.Close();
+                }
+            }
+        }
+
+        private void UpdateMarksAnswer(IAsyncResult ar)
+        {
+            TcpClient tcpClient = (TcpClient)ar.AsyncState;
+            NetworkStream networkStream = tcpClient.GetStream();
+
+            networkStream.EndWrite(ar);
+        }
+
+        private void TeacherConnect(TcpClient tcpClient, TrueMessage trueMessage)
+        {
+            string login = trueMessage.Login;
+            IPEndPoint clientEP = (IPEndPoint)tcpClient.Client.RemoteEndPoint;
+
+            clients.Add(login, clientEP);
+
+            Console.WriteLine($"Teacher {login} connected");
+
+            SqlConnection sqlConnection = new SqlConnection(connectionString);
+            try
+            {
+                if (sqlConnection.State == ConnectionState.Closed)
+                {
+                    sqlConnection.Open();
+                }
+
+                List<string> testNames = new List<string>();
+
+                SqlCommand sqlCommand = new SqlCommand("Proc_GetTestNames", sqlConnection);
+                sqlCommand.CommandType = CommandType.StoredProcedure;
+
+                using (SqlDataReader sqlReader = sqlCommand.ExecuteReader())
+                {
+                    while (sqlReader.Read())
+                    {
+                        testNames.Add(Convert.ToString(sqlReader["Name"]));
+                    }
+                }
+
+                TrueMessage trueMessageToClient = new TrueMessage();
+
+                if (testNames.Count <= 0)
+                {
+                    trueMessageToClient.Command = Command.Reject;
+                }
+                else
+                {
+                    trueMessageToClient.Command = Command.Approve;
+                    trueMessageToClient.Message = testNames.ToArray();
+                }
+
+                byte[] dataTeacherConnectAnswer;
+                IFormatter formatter = new BinaryFormatter();
+
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    formatter.Serialize(stream, trueMessageToClient);
+                    dataTeacherConnectAnswer = stream.ToArray();
+                }
+
+                NetworkStream networkStream = tcpClient.GetStream();
+
+                networkStream.BeginWrite(dataTeacherConnectAnswer, 0, dataTeacherConnectAnswer.Length, new AsyncCallback(TeacherConnectAnswer), tcpClient);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                if (sqlConnection.State != ConnectionState.Closed)
+                {
+                    sqlConnection.Close();
+                }
+            }
+        }
+
+        private void TeacherConnectAnswer(IAsyncResult ar)
+        {
+            TcpClient tcpClient = (TcpClient)ar.AsyncState;
+            NetworkStream networkStream = tcpClient.GetStream();
+
+            networkStream.EndWrite(ar);
         }
 
         private void DeleteUser(TcpClient tcpClient, TrueMessage trueMessage)
