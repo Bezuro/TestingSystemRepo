@@ -118,6 +118,10 @@ namespace Server
                 {
                     AddTest(tcpClient, trueMessage);
                 }
+                else if (trueMessage.Command== Command.DeleteTest)
+                {
+                    DeleteTest(tcpClient, trueMessage);
+                }
 
                 Console.WriteLine("456 COMMAND: " + trueMessage.Command.ToString());
 
@@ -125,6 +129,83 @@ namespace Server
                 (TcpClient tcpClient, byte[] dataReadMessageNew) stateReadMessageNew = (tcpClient, dataReadMessageNew);
                 stream.BeginRead(dataReadMessageNew, 0, dataReadMessageNew.Length, new AsyncCallback(ReadMessage), stateReadMessageNew);
             }
+        }
+
+        private void DeleteTest(TcpClient tcpClient, TrueMessage trueMessage)
+        {
+            Console.WriteLine($"DeleteTest");
+
+            SqlConnection sqlConnection = new SqlConnection(connectionString);
+            try
+            {
+                if (sqlConnection.State == ConnectionState.Closed)
+                {
+                    sqlConnection.Open();
+                }
+
+                string testNameToDelete = (string)trueMessage.Message;
+
+                SqlCommand sqlCommand = new SqlCommand("Proc_GetTestPathByName", sqlConnection);
+                sqlCommand.CommandType = CommandType.StoredProcedure;
+                sqlCommand.Parameters.AddWithValue("@Name", testNameToDelete);
+                string path = Convert.ToString(sqlCommand.ExecuteScalar());
+
+                if (File.Exists(path))
+                {
+                    File.Delete(path);
+                } //else return file already deleted??
+
+                sqlCommand = new SqlCommand("Proc_DeleteTestByName", sqlConnection);
+                sqlCommand.CommandType = CommandType.StoredProcedure;
+                sqlCommand.Parameters.AddWithValue("@Name", testNameToDelete);
+                int nonQ = sqlCommand.ExecuteNonQuery();
+
+                TrueMessage trueMessageToClient = new TrueMessage();
+
+                if (nonQ == 0)
+                {
+                    trueMessageToClient.Command = Command.Reject;
+                }
+                else
+                {
+                    trueMessageToClient.Command = Command.Approve;
+                    trueMessageToClient.Message = testNameToDelete;
+                }
+
+                byte[] dataDeleteTestAnswer;
+                IFormatter formatter = new BinaryFormatter();
+
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    formatter.Serialize(stream, trueMessageToClient);
+                    dataDeleteTestAnswer = stream.ToArray();
+                }
+
+                NetworkStream networkStream = tcpClient.GetStream();
+
+                networkStream.BeginWrite(dataDeleteTestAnswer, 0, dataDeleteTestAnswer.Length, new AsyncCallback(DeleteTestAnswer), tcpClient);
+
+                Console.WriteLine($"DeleteTest ended");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                if (sqlConnection.State != ConnectionState.Closed)
+                {
+                    sqlConnection.Close();
+                }
+            }
+        }
+
+        private void DeleteTestAnswer(IAsyncResult ar)
+        {
+            TcpClient tcpClient = (TcpClient)ar.AsyncState;
+            NetworkStream networkStream = tcpClient.GetStream();
+
+            networkStream.EndWrite(ar);
         }
 
         private void AddTest(TcpClient tcpClient, TrueMessage trueMessage)

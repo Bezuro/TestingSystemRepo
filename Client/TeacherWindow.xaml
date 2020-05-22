@@ -46,7 +46,7 @@
                 <Button x:Name="AddButton" Content="Add" DockPanel.Dock="Left" Margin="10" MinWidth="70"
                         Background="#545d6a" Foreground="White" FontSize="18" Click="AddButton_Click"></Button>
                 <Button x:Name="DeleteButton" IsEnabled="False" Content="Delete" DockPanel.Dock="Left" Margin="10" MinWidth="70"
-                        Background="#545d6a" Foreground="White" FontSize="18"></Button>
+                        Background="#545d6a" Foreground="White" FontSize="18" Click="DeleteButton_Click"></Button>
                 <Button x:Name="ChangeButton" Content="Change" DockPanel.Dock="Left" Margin="10" MinWidth="70"
                         Background="#545d6a" Foreground="White" FontSize="18"></Button>
                 <Button x:Name="SetCurrentButton" Content="Set current test" DockPanel.Dock="Left" Margin="10" MinWidth="70"

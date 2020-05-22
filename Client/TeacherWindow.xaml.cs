@@ -243,8 +243,6 @@ namespace Client
 
             Test test = addTestWindow.Test;
 
-           ///TestNames.Add(test.Name);/////////////////////////////
-
             TrueMessage trueMessageToServer = new TrueMessage { Command = Command.AddTest, Login = login, Message = test };
 
             byte[] dataAddTestRequest;
@@ -292,6 +290,70 @@ namespace Client
             else if (trueMessageFromServer.Command == Command.Reject)
             {
                 MessageBox.Show("Test was not added");
+            }
+            else
+            {
+                MessageBox.Show("Received message from server is incorrect.", "Error");
+            }
+        }
+
+        private void DeleteButton_Click(object sender, RoutedEventArgs e)
+        {
+            int idx = TestListView.SelectedIndex;
+            if (idx == -1)
+            {
+                return;
+            }
+
+            string testToDelete = TestNames[idx];
+
+            TrueMessage trueMessageToServer = new TrueMessage { Command = Command.DeleteTest, Login = login, Message = testToDelete };
+
+            byte[] dataDeleteTestRequest;
+            IFormatter formatter = new BinaryFormatter();
+
+            using (MemoryStream stream = new MemoryStream())
+            {
+                formatter.Serialize(stream, trueMessageToServer);
+                dataDeleteTestRequest = stream.ToArray();
+            }
+
+            networkStream.BeginWrite(dataDeleteTestRequest, 0, dataDeleteTestRequest.Length, new AsyncCallback(DeleteTestRequest), null);
+        }
+
+        private void DeleteTestRequest(IAsyncResult ar)
+        {
+            networkStream.EndWrite(ar);
+
+            byte[] dataDeleteTestAnswer = new byte[64000];
+            networkStream.BeginRead(dataDeleteTestAnswer, 0, dataDeleteTestAnswer.Length, new AsyncCallback(DeleteTestAnswer), dataDeleteTestAnswer);
+        }
+
+        private void DeleteTestAnswer(IAsyncResult ar)
+        {
+            networkStream.EndRead(ar);
+
+            byte[] dataDeleteTestAnswer = (byte[])ar.AsyncState;
+
+            IFormatter formatter = new BinaryFormatter();
+            TrueMessage trueMessageFromServer = new TrueMessage();
+            using (MemoryStream memoryStream = new MemoryStream(dataDeleteTestAnswer))
+            {
+                trueMessageFromServer = (TrueMessage)formatter.Deserialize(memoryStream);
+            }
+
+            if (trueMessageFromServer.Command == Command.Approve)
+            {
+                this.Dispatcher.Invoke(() =>
+                {
+                    TestNames.Remove((string)trueMessageFromServer.Message);
+                });
+
+                MessageBox.Show("Test successfully deleted");
+            }
+            else if (trueMessageFromServer.Command == Command.Reject)
+            {
+                MessageBox.Show("Test was not deleted");
             }
             else
             {
