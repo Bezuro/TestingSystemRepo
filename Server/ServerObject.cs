@@ -118,7 +118,7 @@ namespace Server
                 {
                     AddTest(tcpClient, trueMessage);
                 }
-                else if (trueMessage.Command== Command.DeleteTest)
+                else if (trueMessage.Command == Command.DeleteTest)
                 {
                     DeleteTest(tcpClient, trueMessage);
                 }
@@ -232,6 +232,14 @@ namespace Server
 
                 path = "..\\..\\..\\Tests\\" + path + ".xml";
 
+                TrueMessage trueMessageToClient = new TrueMessage();
+
+                Random random = new Random();
+                while (File.Exists(path))
+                {
+                    path += random.Next(1, 100);
+                }
+
                 TrueXmlSerializer.Save(test, path);
 
                 SqlCommand sqlCommand = new SqlCommand("Proc_AddTest", sqlConnection);
@@ -240,8 +248,6 @@ namespace Server
                 sqlCommand.Parameters.AddWithValue("@Description", test.Description);
                 sqlCommand.Parameters.AddWithValue("@Path", path);
                 sqlCommand.ExecuteNonQuery();
-
-                TrueMessage trueMessageToClient = new TrueMessage();
 
                 trueMessageToClient.Command = Command.Approve;
                 trueMessageToClient.Message = test.Name;
@@ -701,19 +707,19 @@ namespace Server
                 if (userType.Length == 0)
                 {
                     trueMessageToClient.Command = Command.Reject;
+                    trueMessageToClient.Message = "Username or password is incorrect.";
+                }
+                else
+                {
                     if (clients.Keys.Contains(login))
                     {
                         trueMessageToClient.Message = "This user is already logged in!";
                     }
                     else
                     {
-                        trueMessageToClient.Message = "Username or password is incorrect.";
+                        trueMessageToClient.Command = Command.Approve;
+                        trueMessageToClient.Message = userType;
                     }
-                }
-                else
-                {
-                    trueMessageToClient.Command = Command.Approve;
-                    trueMessageToClient.Message = userType;
                 }
 
 

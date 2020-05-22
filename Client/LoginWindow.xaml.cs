@@ -133,7 +133,7 @@ namespace Client
                 }
                 else
                 {
-                    MessageBox.Show($"Wrong message from server. Message: {(string)trueMessageFromServer.Message}", "Error");
+                    MessageBox.Show($"Error message from server. Message: {(string)trueMessageFromServer.Message}", "Error");
                 }
             }
             else if (trueMessageFromServer.Command == Command.Reject)
