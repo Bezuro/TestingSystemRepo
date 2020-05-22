@@ -15,6 +15,8 @@ using System.Data.SqlClient;
 using System.Data;
 using Server.Model;
 using MyListViewObjects;
+using TrueXmlSerializerDLL;
+using TestDLL;
 
 namespace Server
 {
@@ -112,6 +114,10 @@ namespace Server
                 {
                     UpdateMarks(tcpClient, trueMessage);
                 }
+                else if (trueMessage.Command == Command.AddTest)
+                {
+                    AddTest(tcpClient, trueMessage);
+                }
 
                 Console.WriteLine("456 COMMAND: " + trueMessage.Command.ToString());
 
@@ -119,6 +125,80 @@ namespace Server
                 (TcpClient tcpClient, byte[] dataReadMessageNew) stateReadMessageNew = (tcpClient, dataReadMessageNew);
                 stream.BeginRead(dataReadMessageNew, 0, dataReadMessageNew.Length, new AsyncCallback(ReadMessage), stateReadMessageNew);
             }
+        }
+
+        private void AddTest(TcpClient tcpClient, TrueMessage trueMessage)
+        {
+            Console.WriteLine($"AddTest");
+
+            SqlConnection sqlConnection = new SqlConnection(connectionString);
+            try
+            {
+                if (sqlConnection.State == ConnectionState.Closed)
+                {
+                    sqlConnection.Open();
+                }
+
+                TestDLL.Test test = (TestDLL.Test)trueMessage.Message;
+
+                string path = test.Name;
+                string invalid = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars());
+
+                foreach (char c in invalid)
+                {
+                    path = path.Replace(c.ToString(), "");
+                }
+
+                path = "..\\..\\..\\Tests\\" + path + ".xml";
+
+                TrueXmlSerializer.Save(test, path);
+
+                SqlCommand sqlCommand = new SqlCommand("Proc_AddTest", sqlConnection);
+                sqlCommand.CommandType = CommandType.StoredProcedure;
+                sqlCommand.Parameters.AddWithValue("@Name", test.Name);
+                sqlCommand.Parameters.AddWithValue("@Description", test.Description);
+                sqlCommand.Parameters.AddWithValue("@Path", path);
+                sqlCommand.ExecuteNonQuery();
+
+                TrueMessage trueMessageToClient = new TrueMessage();
+
+                trueMessageToClient.Command = Command.Approve;
+                trueMessageToClient.Message = test.Name;
+
+                byte[] dataAddTestAnswer;
+                IFormatter formatter = new BinaryFormatter();
+
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    formatter.Serialize(stream, trueMessageToClient);
+                    dataAddTestAnswer = stream.ToArray();
+                }
+
+                NetworkStream networkStream = tcpClient.GetStream();
+
+                networkStream.BeginWrite(dataAddTestAnswer, 0, dataAddTestAnswer.Length, new AsyncCallback(AddTestAnswer), tcpClient);
+
+                Console.WriteLine($"AddTest ended");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                if (sqlConnection.State != ConnectionState.Closed)
+                {
+                    sqlConnection.Close();
+                }
+            }
+        }
+
+        private void AddTestAnswer(IAsyncResult ar)
+        {
+            TcpClient tcpClient = (TcpClient)ar.AsyncState;
+            NetworkStream networkStream = tcpClient.GetStream();
+
+            networkStream.EndWrite(ar);
         }
 
         private void UpdateMarks(TcpClient tcpClient, TrueMessage trueMessage)

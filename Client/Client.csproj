@@ -55,6 +55,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AddAnswersWindow.xaml.cs">
+      <DependentUpon>AddAnswersWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AddQuestionWindow.xaml.cs">
+      <DependentUpon>AddQuestionWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AddTestWindow.xaml.cs">
+      <DependentUpon>AddTestWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="AdminWindow.xaml.cs">
       <DependentUpon>AdminWindow.xaml</DependentUpon>
     </Compile>
@@ -67,6 +76,18 @@
     <Compile Include="UserAddWindow.xaml.cs">
       <DependentUpon>UserAddWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="AddAnswersWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AddQuestionWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AddTestWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="AdminWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -126,6 +147,10 @@
     <ProjectReference Include="..\MyListViewObjects\MyListViewObjects.csproj">
       <Project>{AD6A7436-8C6E-4D16-9486-DAF031346F01}</Project>
       <Name>MyListViewObjects</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TestDLL\TestDLL.csproj">
+      <Project>{33E2CEC9-E2E8-4E61-B190-8D402AD12A64}</Project>
+      <Name>TestDLL</Name>
     </ProjectReference>
     <ProjectReference Include="..\TrueMessageDLL\TrueMessageDLL.csproj">
       <Project>{6ada5a89-d0c5-40f1-b367-07789796e898}</Project>

@@ -90,9 +90,17 @@
       <Project>{AD6A7436-8C6E-4D16-9486-DAF031346F01}</Project>
       <Name>MyListViewObjects</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TestDLL\TestDLL.csproj">
+      <Project>{33e2cec9-e2e8-4e61-b190-8d402ad12a64}</Project>
+      <Name>TestDLL</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TrueMessageDLL\TrueMessageDLL.csproj">
       <Project>{6ada5a89-d0c5-40f1-b367-07789796e898}</Project>
       <Name>TrueMessageDLL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TrueXmlSerializerDLL\TrueXmlSerializerDLL.csproj">
+      <Project>{35F59FF2-CDE5-42CA-A090-B57007BC0448}</Project>
+      <Name>TrueXmlSerializerDLL</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

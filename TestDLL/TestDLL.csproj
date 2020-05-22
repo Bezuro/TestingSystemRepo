@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{AD6A7436-8C6E-4D16-9486-DAF031346F01}</ProjectGuid>
+    <ProjectGuid>{33E2CEC9-E2E8-4E61-B190-8D402AD12A64}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MyListViewObjects</RootNamespace>
-    <AssemblyName>MyListViewObjects</AssemblyName>
+    <RootNamespace>TestDLL</RootNamespace>
+    <AssemblyName>TestDLL</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -41,10 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnswerLW.cs" />
-    <Compile Include="MarkLW.cs" />
-    <Compile Include="QuestionLW.cs" />
-    <Compile Include="UserLW.cs" />
+    <Compile Include="Test.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

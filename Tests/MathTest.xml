@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<Test xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <TestName>MathTest</TestName>
+  <Description>For testing</Description>
+  <Questions>
+    <QuestionText>2 + 2 = ?</QuestionText>
+    <Answers>
+      <AnswerText>4</AnswerText>
+      <IsRight>true</IsRight>
+      <IsChecked>false</IsChecked>
+    </Answers>
+    <Answers>
+      <AnswerText>3</AnswerText>
+      <IsRight>false</IsRight>
+      <IsChecked>false</IsChecked>
+    </Answers>
+    <Answers>
+      <AnswerText>6</AnswerText>
+      <IsRight>false</IsRight>
+      <IsChecked>false</IsChecked>
+    </Answers>
+    <Answers>
+      <AnswerText>1</AnswerText>
+      <IsRight>false</IsRight>
+      <IsChecked>false</IsChecked>
+    </Answers>
+    <IsAnsweredCorrectly>false</IsAnsweredCorrectly>
+    <ScoreModifier>1</ScoreModifier>
+    <IsManyAnswers>false</IsManyAnswers>
+  </Questions>
+  <Questions>
+    <QuestionText>5 + 4 = ?</QuestionText>
+    <Answers>
+      <AnswerText>6</AnswerText>
+      <IsRight>false</IsRight>
+      <IsChecked>false</IsChecked>
+    </Answers>
+    <Answers>
+      <AnswerText>5</AnswerText>
+      <IsRight>false</IsRight>
+      <IsChecked>false</IsChecked>
+    </Answers>
+    <Answers>
+      <AnswerText>9</AnswerText>
+      <IsRight>true</IsRight>
+      <IsChecked>false</IsChecked>
+    </Answers>
+    <Answers>
+      <AnswerText>10</AnswerText>
+      <IsRight>false</IsRight>
+      <IsChecked>false</IsChecked>
+    </Answers>
+    <IsAnsweredCorrectly>false</IsAnsweredCorrectly>
+    <ScoreModifier>1.2</ScoreModifier>
+    <IsManyAnswers>false</IsManyAnswers>
+  </Questions>
+</Test>

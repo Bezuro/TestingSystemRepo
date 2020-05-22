@@ -17,6 +17,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using TestDLL;
 using TrueMessageDLL;
 
 namespace Client
@@ -200,16 +201,16 @@ namespace Client
 
                 TrueMessage trueMessageToServer = new TrueMessage { Command = Command.Disconnect, Login = login };
 
-                byte[] dataWriteDisconnectRequest;
+                byte[] dataDisconnectRequest;
                 IFormatter formatter = new BinaryFormatter();
 
                 using (MemoryStream stream = new MemoryStream())
                 {
                     formatter.Serialize(stream, trueMessageToServer);
-                    dataWriteDisconnectRequest = stream.ToArray();
+                    dataDisconnectRequest = stream.ToArray();
                 }
 
-                IAsyncResult asyncResult = networkStream.BeginWrite(dataWriteDisconnectRequest, 0, dataWriteDisconnectRequest.Length, new AsyncCallback(DisconnectRequest), null);
+                IAsyncResult asyncResult = networkStream.BeginWrite(dataDisconnectRequest, 0, dataDisconnectRequest.Length, new AsyncCallback(DisconnectRequest), null);
                 asyncResult.AsyncWaitHandle.WaitOne();
 
                 Environment.Exit(0);
@@ -228,6 +229,74 @@ namespace Client
                 networkStream.Close();
             if (client != null)
                 client.Close();
+        }
+
+        private void AddButton_Click(object sender, RoutedEventArgs e)
+        {
+            AddTestWindow addTestWindow = new AddTestWindow();
+            addTestWindow.ShowDialog();
+
+            if (addTestWindow.Test == null)
+            {
+                return;
+            }
+
+            Test test = addTestWindow.Test;
+
+           ///TestNames.Add(test.Name);/////////////////////////////
+
+            TrueMessage trueMessageToServer = new TrueMessage { Command = Command.AddTest, Login = login, Message = test };
+
+            byte[] dataAddTestRequest;
+            IFormatter formatter = new BinaryFormatter();
+
+            using (MemoryStream stream = new MemoryStream())
+            {
+                formatter.Serialize(stream, trueMessageToServer);
+                dataAddTestRequest = stream.ToArray();
+            }
+
+            networkStream.BeginWrite(dataAddTestRequest, 0, dataAddTestRequest.Length, new AsyncCallback(AddTestRequest), null);
+        }
+
+        private void AddTestRequest(IAsyncResult ar)
+        {
+            networkStream.EndWrite(ar);
+
+            byte[] dataAddTestAnswer = new byte[64000];
+            networkStream.BeginRead(dataAddTestAnswer, 0, dataAddTestAnswer.Length, new AsyncCallback(AddTestAnswer), dataAddTestAnswer);
+        }
+
+        private void AddTestAnswer(IAsyncResult ar)
+        {
+            networkStream.EndRead(ar);
+
+            byte[] dataAddTestAnswer = (byte[])ar.AsyncState;
+
+            IFormatter formatter = new BinaryFormatter();
+            TrueMessage trueMessageFromServer = new TrueMessage();
+            using (MemoryStream memoryStream = new MemoryStream(dataAddTestAnswer))
+            {
+                trueMessageFromServer = (TrueMessage)formatter.Deserialize(memoryStream);
+            }
+
+            if (trueMessageFromServer.Command == Command.Approve)
+            {
+                this.Dispatcher.Invoke(() =>
+                {
+                    TestNames.Add((string)trueMessageFromServer.Message); //return test name if added
+                });
+
+                MessageBox.Show("Test successfully added");
+            }
+            else if (trueMessageFromServer.Command == Command.Reject)
+            {
+                MessageBox.Show("Test was not added");
+            }
+            else
+            {
+                MessageBox.Show("Received message from server is incorrect.", "Error");
+            }
         }
     }
 }
