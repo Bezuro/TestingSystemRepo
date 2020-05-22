@@ -50,10 +50,10 @@
                 <Button x:Name="ChangeButton" Content="Change" DockPanel.Dock="Left" Margin="10" MinWidth="70"
                         Background="#545d6a" Foreground="White" FontSize="18"></Button>
                 <Button x:Name="SetCurrentButton" Content="Set current test" DockPanel.Dock="Left" Margin="10" MinWidth="70"
-                        Background="#545d6a" Foreground="White" FontSize="18"></Button>
+                        Background="#545d6a" Foreground="White" FontSize="18" Click="SetCurrentButton_Click"></Button>
                 <TextBlock Text="Set time:" Margin="5"
                            FontSize="18" Foreground="NavajoWhite" VerticalAlignment ="Center"></TextBlock>
-                <ComboBox x:Name="UserTypeComboBox" Margin="5 10" Background="#545d6a" Foreground="White" MinWidth="100">
+                <ComboBox x:Name="TimeComboBox" Margin="5 10" Background="#545d6a" Foreground="White" MinWidth="100">
                     <ComboBox.ItemContainerStyle>
                         <Style TargetType="ComboBoxItem">
                             <Setter Property="HorizontalContentAlignment" Value="Center" />

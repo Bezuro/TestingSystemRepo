@@ -25,6 +25,9 @@ namespace Server
         static TcpListener tcpListener;
         Dictionary<string, IPEndPoint> clients = new Dictionary<string, IPEndPoint>();
 
+        TestDLL.Test currentTest;
+        string testTime;
+
         string connectionString = ConfigurationManager.ConnectionStrings["TestingSystemConnectionString"].ConnectionString;
 
         protected internal void Listen()
@@ -122,6 +125,10 @@ namespace Server
                 {
                     DeleteTest(tcpClient, trueMessage);
                 }
+                else if (trueMessage.Command == Command.ChooseCurrentTest)
+                {
+                    ChooseCurrentTest(tcpClient, trueMessage);
+                }
 
                 Console.WriteLine("456 COMMAND: " + trueMessage.Command.ToString());
 
@@ -129,6 +136,78 @@ namespace Server
                 (TcpClient tcpClient, byte[] dataReadMessageNew) stateReadMessageNew = (tcpClient, dataReadMessageNew);
                 stream.BeginRead(dataReadMessageNew, 0, dataReadMessageNew.Length, new AsyncCallback(ReadMessage), stateReadMessageNew);
             }
+        }
+
+        private void ChooseCurrentTest(TcpClient tcpClient, TrueMessage trueMessage)
+        {
+            Console.WriteLine($"ChooseCurrentTest");
+
+            SqlConnection sqlConnection = new SqlConnection(connectionString);
+            try
+            {
+                if (sqlConnection.State == ConnectionState.Closed)
+                {
+                    sqlConnection.Open();
+                }
+
+                KeyValuePair<string, string> choosePair = (KeyValuePair<string, string>)trueMessage.Message;
+
+                string testNameToChoose = choosePair.Key;
+
+                SqlCommand sqlCommand = new SqlCommand("Proc_GetTestPathByName", sqlConnection);
+                sqlCommand.CommandType = CommandType.StoredProcedure;
+                sqlCommand.Parameters.AddWithValue("@Name", testNameToChoose);
+                string path = Convert.ToString(sqlCommand.ExecuteScalar());
+
+                TrueMessage trueMessageToClient = new TrueMessage();
+
+                if (File.Exists(path))
+                {
+                    currentTest = TrueXmlSerializer.Load<TestDLL.Test>(path);
+                    testTime = choosePair.Value;
+
+                    trueMessageToClient.Command = Command.Approve;
+                }
+                else
+                {
+                    trueMessageToClient.Command = Command.Reject;
+                    trueMessageToClient.Message = "Test not found";
+                }
+
+                byte[] dataChooseCurrentTestAnswer;
+                IFormatter formatter = new BinaryFormatter();
+
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    formatter.Serialize(stream, trueMessageToClient);
+                    dataChooseCurrentTestAnswer = stream.ToArray();
+                }
+
+                NetworkStream networkStream = tcpClient.GetStream();
+
+                networkStream.BeginWrite(dataChooseCurrentTestAnswer, 0, dataChooseCurrentTestAnswer.Length, new AsyncCallback(ChooseCurrentTestAnswer), tcpClient);
+
+                Console.WriteLine($"ChooseCurrentTest ended");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                if (sqlConnection.State != ConnectionState.Closed)
+                {
+                    sqlConnection.Close();
+                }
+            }
+        }
+
+        private void ChooseCurrentTestAnswer(IAsyncResult ar)
+        {
+            TcpClient tcpClient = (TcpClient)ar.AsyncState;
+            NetworkStream networkStream = tcpClient.GetStream();
+
+            networkStream.EndWrite(ar);
         }
 
         private void DeleteTest(TcpClient tcpClient, TrueMessage trueMessage)

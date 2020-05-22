@@ -360,5 +360,77 @@ namespace Client
                 MessageBox.Show("Received message from server is incorrect.", "Error");
             }
         }
+
+        private void SetCurrentButton_Click(object sender, RoutedEventArgs e)
+        {
+            if ((TextBlock)TimeComboBox.SelectedItem == null)
+            {
+                MessageBox.Show("You must set Time", "Error");
+                return;
+            }
+
+            TextBlock selectedItem = (TextBlock)UserTypeComboBox.SelectedItem;
+            string time = selectedItem.Text;
+
+            int idx = TestListView.SelectedIndex;
+            if (idx == -1)
+            {
+                MessageBox.Show("You must select test first", "Error");
+                return;
+            }
+
+            string testToChoose = TestNames[idx];
+
+            KeyValuePair<string, string> choosePair = new KeyValuePair<string, string>(testToChoose, time);
+
+            TrueMessage trueMessageToServer = new TrueMessage { Command = Command.ChooseCurrentTest, Login = login, Message = choosePair };
+
+            byte[] dataChooseCurrentTestRequest;
+            IFormatter formatter = new BinaryFormatter();
+
+            using (MemoryStream stream = new MemoryStream())
+            {
+                formatter.Serialize(stream, trueMessageToServer);
+                dataChooseCurrentTestRequest = stream.ToArray();
+            }
+
+            networkStream.BeginWrite(dataChooseCurrentTestRequest, 0, dataChooseCurrentTestRequest.Length, new AsyncCallback(ChooseCurrentTestRequest), null);
+        }
+
+        private void ChooseCurrentTestRequest(IAsyncResult ar)
+        {
+            networkStream.EndWrite(ar);
+
+            byte[] dataChooseCurrentTestAnswer = new byte[64000];
+            networkStream.BeginRead(dataChooseCurrentTestAnswer, 0, dataChooseCurrentTestAnswer.Length, 
+                new AsyncCallback(ChooseCurrentTestAnswer), dataChooseCurrentTestAnswer);
+        }
+
+        private void ChooseCurrentTestAnswer(IAsyncResult ar)
+        {
+            networkStream.EndRead(ar);
+
+            byte[] dataChooseCurrentTestAnswer = (byte[])ar.AsyncState;
+
+            IFormatter formatter = new BinaryFormatter();
+            TrueMessage trueMessageFromServer = new TrueMessage();
+            using (MemoryStream memoryStream = new MemoryStream(dataChooseCurrentTestAnswer))
+            {
+                trueMessageFromServer = (TrueMessage)formatter.Deserialize(memoryStream);
+            }
+
+            if (trueMessageFromServer.Command == Command.Approve)
+            {
+                MessageBox.Show("Test successfully started");
+            }
+            else if (trueMessageFromServer.Command == Command.Reject)
+            {
+                MessageBox.Show("Test was not started");
+            }
+            else
+            {
+                MessageBox.Show("Received message from server is incorrect.", "Error");
+            }
+        }
     }
 }
