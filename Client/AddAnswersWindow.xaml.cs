@@ -46,6 +46,8 @@ namespace Client
                 Answer = AnswerTextBox.Text,
                 IsRight = isRight
             });
+
+            AnswerTextBox.Text = "";
         }
 
         private void DeleteButton_Click(object sender, RoutedEventArgs e)

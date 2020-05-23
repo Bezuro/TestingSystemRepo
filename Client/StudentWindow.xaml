@@ -8,24 +8,29 @@
         Title="StudentWindow" Height="600" Width="800" FontSize="14" Background="#04c582" Loaded="Window_Loaded" Closing="Window_Closing">
     <Border Background="#2e3137" CornerRadius="10" Margin="10">
         <DockPanel>
-            <TextBlock x:Name="QuestionNumberTextBlock" DockPanel.Dock="Top"
+            <TextBlock x:Name="TestNameTextBlock" DockPanel.Dock="Top"
                        TextAlignment="Center" VerticalAlignment="Center" 
-                       FontSize="30px" Foreground="White">
+                       FontSize="25px" Foreground="NavajoWhite">
+                TestName
+            </TextBlock>
+            <TextBlock x:Name="QuestionNumberTextBlock" DockPanel.Dock="Top" Visibility="Hidden"
+                       TextAlignment="Center" VerticalAlignment="Center" 
+                       FontSize="25px" Foreground="White">
                 Question 1
             </TextBlock>
             <DockPanel DockPanel.Dock="Bottom">
                 <Button x:Name="PreviousButton" Content="Previous" DockPanel.Dock="Left" 
                         Margin="10" MinWidth="80"
-                        Background="#545d6a" Foreground="White" FontSize="18"></Button>
+                        Background="#545d6a" Foreground="White" FontSize="18" Click="PreviousButton_Click"></Button>
                 <Button x:Name="NextButton" Content="Next" DockPanel.Dock="Left" 
                         Margin="10" MinWidth="80"
-                        Background="#545d6a" Foreground="White" FontSize="18"></Button>
+                        Background="#545d6a" Foreground="White" FontSize="18" Click="NextButton_Click"></Button>
                 <Button x:Name="StartButton" Content="Start test" DockPanel.Dock="Left" 
                         Margin="10" MinWidth="80"
-                        Background="#545d6a" Foreground="White" FontSize="18"></Button>
+                        Background="#545d6a" Foreground="White" FontSize="18" Click="StartButton_Click"></Button>
                 <Button x:Name="EndButton" Content="End test" DockPanel.Dock="Left" 
                         Margin="10" MinWidth="80"
-                        Background="#545d6a" Foreground="White" FontSize="18"></Button>
+                        Background="#545d6a" Foreground="White" FontSize="18" Click="EndButton_Click"></Button>
                 <Button x:Name="RetryLoadButton" Content="Retry load" DockPanel.Dock="Right" 
                         Margin="10" MinWidth="80"
                         Background="#545d6a" Foreground="White" FontSize="18" Click="RetryLoadButton_Click"></Button>
@@ -37,10 +42,44 @@
                     </TextBlock>
                 </Grid>
             </DockPanel>
-            <Frame x:Name="QuestionFrame" Margin="10"
+            <Grid>
+                <Frame x:Name="QuestionFrame" Margin="10"
                    NavigationUIVisibility="Hidden">
-                
-            </Frame>
+
+                </Frame>
+
+                <Grid x:Name="TestEndedGrid" Margin="10" Visibility="Hidden">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock FontSize="25px" Foreground="NavajoWhite" Margin="5"
+                               HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                        Questions Answered
+                    </TextBlock>
+                    <TextBlock x:Name="QuestionsAnsweredTextBlock" Grid.Column="1" Margin="5"
+                               FontSize="25px" Foreground="NavajoWhite"
+                               HorizontalAlignment="Left" VerticalAlignment="Bottom">
+
+                    </TextBlock>
+
+                    <TextBlock FontSize="25px" Grid.Row="1" Foreground="NavajoWhite" Margin="5"
+                               HorizontalAlignment="Right" VerticalAlignment="Top">
+                        Total score
+                    </TextBlock>
+                    <TextBlock x:Name="ScoreTextBlock" Grid.Row="1"  Grid.Column="1" Margin="5"
+                               FontSize="25px" Foreground="NavajoWhite"
+                               HorizontalAlignment="Left" VerticalAlignment="Top">
+
+                    </TextBlock>
+                </Grid>
+            </Grid>
         </DockPanel>
     </Border>
 </Window>

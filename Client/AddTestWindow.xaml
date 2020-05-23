@@ -5,23 +5,23 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
-        Title="AddTestWindow" Height="600" Width="600" FontSize="14" Background="#04c582" >
+        Title="AddTestWindow" Height="800" Width="800" FontSize="14" Background="#04c582" >
     <Border Background="#2e3137" CornerRadius="20" Margin="10">
         <DockPanel Margin="20">
             <DockPanel DockPanel.Dock="Top">
                 <TextBlock Text="Test name" Margin="10 5 0 5"
                            FontSize="25" Foreground="NavajoWhite" VerticalAlignment ="Center">
                     </TextBlock>
-                    <TextBox x:Name="TestNameTextBox" Margin="10 5"
-                         Background="#545d6a" FontSize="25" 
+                    <TextBox x:Name="TestNameTextBox" Margin="10 5" AcceptsReturn="True"
+                         Background="#545d6a" FontSize="20" 
                          VerticalAlignment ="Center" HorizontalAlignment="Stretch"></TextBox>
             </DockPanel>
             <DockPanel DockPanel.Dock="Top">
                 <TextBlock Text="Description" Margin="10 5 0 5"
                            FontSize="25" Foreground="NavajoWhite" VerticalAlignment ="Center">
                 </TextBlock>
-                <TextBox x:Name="DescriptionTextBox" Margin="10 5"
-                         Background="#545d6a" FontSize="25" 
+                <TextBox x:Name="DescriptionTextBox" Margin="10 5" AcceptsReturn="True"
+                         Background="#545d6a" FontSize="20" 
                          VerticalAlignment ="Center" HorizontalAlignment="Stretch"></TextBox>
             </DockPanel>
             <DockPanel DockPanel.Dock="Bottom">

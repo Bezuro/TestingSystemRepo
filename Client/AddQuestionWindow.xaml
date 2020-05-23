@@ -5,13 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
-        Title="AddQuestionWindow" Height="300" Width="300" FontSize="14" Background="#04c582">
+        Title="AddQuestionWindow" Height="400" Width="400" FontSize="14" Background="#04c582">
     <Border Background="#2e3137" CornerRadius="20" Margin="10">
         <StackPanel Margin="20">
             <Label Content="AddQuestion" Foreground="White" FontSize="25" HorizontalAlignment="Center"/>
             <Separator/>
             <Label Content="Question" Foreground="White"/>
-            <TextBox x:Name="QuestionTextBox" Background="#545d6a" Foreground="White" FontSize="18" AcceptsReturn="True"/>
+            <TextBox x:Name="QuestionTextBox" Background="#545d6a" Foreground="White" FontSize="18" AcceptsReturn="True" MinHeight="120"/>
             <Label Content="Modifier" Foreground="White"/>
             <TextBox x:Name="ModifierTextBox" Background="#545d6a" Foreground="White" FontSize="18" AcceptsReturn="True"/>
             <Button x:Name="AddButton" Click="AddButton_Click" Content="Add" Margin="60 10" Background="#545d6a" Foreground="White" FontSize="18"/>

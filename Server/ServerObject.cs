@@ -137,6 +137,10 @@ namespace Server
                 {
                     LoadCurrentTest(tcpClient, trueMessage);
                 }
+                else if (trueMessage.Command == Command.SendMark)
+                {
+                    SendMark(tcpClient, trueMessage);
+                }
 
                 Console.WriteLine("456 COMMAND: " + trueMessage.Command.ToString());
 
@@ -144,6 +148,85 @@ namespace Server
                 (TcpClient tcpClient, byte[] dataReadMessageNew) stateReadMessageNew = (tcpClient, dataReadMessageNew);
                 stream.BeginRead(dataReadMessageNew, 0, dataReadMessageNew.Length, new AsyncCallback(ReadMessage), stateReadMessageNew);
             }
+        }
+
+        private void SendMark(TcpClient tcpClient, TrueMessage trueMessage)
+        {
+            Console.WriteLine($"LoadCurrentTest");
+
+            SqlConnection sqlConnection = new SqlConnection(connectionString);
+            try
+            {
+                if (sqlConnection.State == ConnectionState.Closed)
+                {
+                    sqlConnection.Open();
+                }
+
+                //////////////////////////////////////////////////////////////////////////////////////////
+                KeyValuePair<string, int> markPair = (KeyValuePair<string, int>)trueMessage.Message;
+                string testName = markPair.Key;
+                int mark = markPair.Value;
+
+                SqlCommand sqlCommand = new SqlCommand("Proc_SelectUserIdByName", sqlConnection);
+                sqlCommand.CommandType = CommandType.StoredProcedure;
+                sqlCommand.Parameters.AddWithValue("@Login", trueMessage.Login);
+                int userId = Convert.ToInt32(sqlCommand.ExecuteScalar());
+
+                sqlCommand = new SqlCommand("Proc_SelectTestIdByName", sqlConnection);
+                sqlCommand.CommandType = CommandType.StoredProcedure;
+                sqlCommand.Parameters.AddWithValue("@Name", testName);
+                int testId = Convert.ToInt32(sqlCommand.ExecuteScalar());
+
+                sqlCommand = new SqlCommand("Proc_AddMark", sqlConnection);
+                sqlCommand.CommandType = CommandType.StoredProcedure;
+                sqlCommand.Parameters.AddWithValue("@Mark", mark);
+                sqlCommand.Parameters.AddWithValue("@StudentId", userId);
+                sqlCommand.Parameters.AddWithValue("@TestId", testId);
+                int execNonQ = sqlCommand.ExecuteNonQuery();
+
+                TrueMessage trueMessageToClient = new TrueMessage();
+
+                if (execNonQ == 0)
+                {
+                    trueMessageToClient.Command = Command.Reject;
+                }
+                else
+                {
+                    trueMessageToClient.Command = Command.Approve;
+                }
+
+                byte[] dataSendMarkAnswer;
+                IFormatter formatter = new BinaryFormatter();
+
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    formatter.Serialize(stream, trueMessageToClient);
+                    dataSendMarkAnswer = stream.ToArray();
+                }
+
+                NetworkStream networkStream = tcpClient.GetStream();
+
+                networkStream.BeginWrite(dataSendMarkAnswer, 0, dataSendMarkAnswer.Length, new AsyncCallback(SendMarkAnswer), tcpClient);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                if (sqlConnection.State != ConnectionState.Closed)
+                {
+                    sqlConnection.Close();
+                }
+            }
+        }
+
+        private void SendMarkAnswer(IAsyncResult ar)
+        {
+            TcpClient tcpClient = (TcpClient)ar.AsyncState;
+            NetworkStream networkStream = tcpClient.GetStream();
+
+            networkStream.EndWrite(ar);
         }
 
         private void LoadCurrentTest(TcpClient tcpClient, TrueMessage trueMessage)
