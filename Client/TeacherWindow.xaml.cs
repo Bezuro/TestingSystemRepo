@@ -369,8 +369,28 @@ namespace Client
                 return;
             }
 
-            TextBlock selectedItem = (TextBlock)UserTypeComboBox.SelectedItem;
+            TextBlock selectedItem = (TextBlock)TimeComboBox.SelectedItem;
             string time = selectedItem.Text;
+            switch (time)
+            {
+                case "10 min":
+                    time = "10";
+                    break;
+                case "20 min":
+                    time = "20";
+                    break;
+                case "30 min":
+                    time = "30";
+                    break;
+                case "45 min":
+                    time = "45";
+                    break;
+                case "60 min":
+                    time = "60";
+                    break;
+                default:
+                    break;
+            }
 
             int idx = TestListView.SelectedIndex;
             if (idx == -1)

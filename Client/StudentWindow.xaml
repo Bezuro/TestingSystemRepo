@@ -5,8 +5,42 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
-        Title="StudentWindow" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+        Title="StudentWindow" Height="600" Width="800" FontSize="14" Background="#04c582" Loaded="Window_Loaded" Closing="Window_Closing">
+    <Border Background="#2e3137" CornerRadius="10" Margin="10">
+        <DockPanel>
+            <TextBlock x:Name="QuestionNumberTextBlock" DockPanel.Dock="Top"
+                       TextAlignment="Center" VerticalAlignment="Center" 
+                       FontSize="30px" Foreground="White">
+                Question 1
+            </TextBlock>
+            <DockPanel DockPanel.Dock="Bottom">
+                <Button x:Name="PreviousButton" Content="Previous" DockPanel.Dock="Left" 
+                        Margin="10" MinWidth="80"
+                        Background="#545d6a" Foreground="White" FontSize="18"></Button>
+                <Button x:Name="NextButton" Content="Next" DockPanel.Dock="Left" 
+                        Margin="10" MinWidth="80"
+                        Background="#545d6a" Foreground="White" FontSize="18"></Button>
+                <Button x:Name="StartButton" Content="Start test" DockPanel.Dock="Left" 
+                        Margin="10" MinWidth="80"
+                        Background="#545d6a" Foreground="White" FontSize="18"></Button>
+                <Button x:Name="EndButton" Content="End test" DockPanel.Dock="Left" 
+                        Margin="10" MinWidth="80"
+                        Background="#545d6a" Foreground="White" FontSize="18"></Button>
+                <Button x:Name="RetryLoadButton" Content="Retry load" DockPanel.Dock="Right" 
+                        Margin="10" MinWidth="80"
+                        Background="#545d6a" Foreground="White" FontSize="18" Click="RetryLoadButton_Click"></Button>
+                <Grid>
+                    <TextBlock x:Name="TimerTextBlock" FontSize="25px"
+                               VerticalAlignment="Center" TextAlignment="Center"
+                               Foreground="NavajoWhite">
+                        Timer
+                    </TextBlock>
+                </Grid>
+            </DockPanel>
+            <Frame x:Name="QuestionFrame" Margin="10"
+                   NavigationUIVisibility="Hidden">
+                
+            </Frame>
+        </DockPanel>
+    </Border>
 </Window>

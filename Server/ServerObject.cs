@@ -129,6 +129,14 @@ namespace Server
                 {
                     ChooseCurrentTest(tcpClient, trueMessage);
                 }
+                else if (trueMessage.Command == Command.StudentConnect)
+                {
+                    StudentConnect(tcpClient, trueMessage);
+                }
+                else if (trueMessage.Command == Command.LoadCurrentTest)
+                {
+                    LoadCurrentTest(tcpClient, trueMessage);
+                }
 
                 Console.WriteLine("456 COMMAND: " + trueMessage.Command.ToString());
 
@@ -136,6 +144,129 @@ namespace Server
                 (TcpClient tcpClient, byte[] dataReadMessageNew) stateReadMessageNew = (tcpClient, dataReadMessageNew);
                 stream.BeginRead(dataReadMessageNew, 0, dataReadMessageNew.Length, new AsyncCallback(ReadMessage), stateReadMessageNew);
             }
+        }
+
+        private void LoadCurrentTest(TcpClient tcpClient, TrueMessage trueMessage)
+        {
+            Console.WriteLine($"LoadCurrentTest");
+
+            SqlConnection sqlConnection = new SqlConnection(connectionString);
+            try
+            {
+                if (sqlConnection.State == ConnectionState.Closed)
+                {
+                    sqlConnection.Open();
+                }
+
+                TrueMessage trueMessageToClient = new TrueMessage();
+
+                if (currentTest == null)
+                {
+                    trueMessageToClient.Command = Command.Reject;
+                }
+                else
+                {
+                    trueMessageToClient.Command = Command.Approve;
+                    KeyValuePair<TestDLL.Test, string> testPair = new KeyValuePair<TestDLL.Test, string>(currentTest, testTime);
+                    trueMessageToClient.Message = testPair;
+                }
+
+                byte[] dataStudentConnectAnswer;
+                IFormatter formatter = new BinaryFormatter();
+
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    formatter.Serialize(stream, trueMessageToClient);
+                    dataStudentConnectAnswer = stream.ToArray();
+                }
+
+                NetworkStream networkStream = tcpClient.GetStream();
+
+                networkStream.BeginWrite(dataStudentConnectAnswer, 0, dataStudentConnectAnswer.Length, new AsyncCallback(LoadCurrentTestAnswer), tcpClient);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                if (sqlConnection.State != ConnectionState.Closed)
+                {
+                    sqlConnection.Close();
+                }
+            }
+        }
+
+        private void LoadCurrentTestAnswer(IAsyncResult ar)
+        {
+            TcpClient tcpClient = (TcpClient)ar.AsyncState;
+            NetworkStream networkStream = tcpClient.GetStream();
+
+            networkStream.EndWrite(ar);
+        }
+
+        private void StudentConnect(TcpClient tcpClient, TrueMessage trueMessage)
+        {
+            string login = trueMessage.Login;
+            IPEndPoint clientEP = (IPEndPoint)tcpClient.Client.RemoteEndPoint;
+
+            clients.Add(login, clientEP);
+
+            Console.WriteLine($"Student {login} connected");
+
+            SqlConnection sqlConnection = new SqlConnection(connectionString);
+            try
+            {
+                if (sqlConnection.State == ConnectionState.Closed)
+                {
+                    sqlConnection.Open();
+                }
+
+                TrueMessage trueMessageToClient = new TrueMessage();
+
+                if (currentTest == null)
+                {
+                    trueMessageToClient.Command = Command.Reject;
+                }
+                else
+                {
+                    trueMessageToClient.Command = Command.Approve;
+                    KeyValuePair<TestDLL.Test, string> testPair = new KeyValuePair<TestDLL.Test, string>(currentTest, testTime);
+                    trueMessageToClient.Message = testPair;
+                }
+
+                byte[] dataStudentConnectAnswer;
+                IFormatter formatter = new BinaryFormatter();
+
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    formatter.Serialize(stream, trueMessageToClient);
+                    dataStudentConnectAnswer = stream.ToArray();
+                }
+
+                NetworkStream networkStream = tcpClient.GetStream();
+
+                networkStream.BeginWrite(dataStudentConnectAnswer, 0, dataStudentConnectAnswer.Length, new AsyncCallback(StudentConnectAnswer), tcpClient);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                if (sqlConnection.State != ConnectionState.Closed)
+                {
+                    sqlConnection.Close();
+                }
+            }
+        }
+
+        private void StudentConnectAnswer(IAsyncResult ar)
+        {
+            TcpClient tcpClient = (TcpClient)ar.AsyncState;
+            NetworkStream networkStream = tcpClient.GetStream();
+
+            networkStream.EndWrite(ar);
         }
 
         private void ChooseCurrentTest(TcpClient tcpClient, TrueMessage trueMessage)
