@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrueXmlSerializerDLL", "Tru
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestDLL", "TestDLL\TestDLL.csproj", "{33E2CEC9-E2E8-4E61-B190-8D402AD12A64}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrueXmlSerializerDLL.Tests", "TrueXmlSerializerDLL.Tests\TrueXmlSerializerDLL.Tests.csproj", "{38C5120B-E24B-4158-9E2F-BDA1F9DF1067}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{33E2CEC9-E2E8-4E61-B190-8D402AD12A64}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33E2CEC9-E2E8-4E61-B190-8D402AD12A64}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{33E2CEC9-E2E8-4E61-B190-8D402AD12A64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38C5120B-E24B-4158-9E2F-BDA1F9DF1067}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38C5120B-E24B-4158-9E2F-BDA1F9DF1067}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38C5120B-E24B-4158-9E2F-BDA1F9DF1067}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38C5120B-E24B-4158-9E2F-BDA1F9DF1067}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
