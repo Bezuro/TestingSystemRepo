@@ -59,6 +59,8 @@ namespace Client
                 Questions.Remove(Questions[idx]);
 
                 DeleteButton.IsEnabled = false;
+                ChangeButton.IsEnabled = false;
+                AnswersButton.IsEnabled = false;
             }
         }
 
@@ -146,6 +148,29 @@ namespace Client
         private void QuestionsListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             DeleteButton.IsEnabled = true;
+            ChangeButton.IsEnabled = true;
+            AnswersButton.IsEnabled = true;
+        }
+
+        private void ChangeButton_Click(object sender, RoutedEventArgs e)
+        {
+            int idx = QuestionsListView.SelectedIndex;
+            if (idx == -1)
+            {
+                return;
+            }
+
+            string questionText = Questions[idx].QuestionText;
+            double scoreModifier = Questions[idx].ScoreModifier;
+
+            ChangeQuestionWindow changeQuestionWindow = new ChangeQuestionWindow(questionText, scoreModifier);
+            changeQuestionWindow.ShowDialog();
+
+            if (changeQuestionWindow.ChangePressed)
+            {
+                Questions[idx].QuestionText = changeQuestionWindow.QuestionText;
+                Questions[idx].ScoreModifier = changeQuestionWindow.ScoreModifier;
+            }
         }
     }
 }

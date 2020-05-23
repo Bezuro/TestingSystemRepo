@@ -48,6 +48,7 @@ namespace Client
             });
 
             AnswerTextBox.Text = "";
+            IsRightCheckBox.IsChecked = false;
         }
 
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
@@ -62,6 +63,7 @@ namespace Client
             Answers.Remove(Answers[idx]);
 
             DeleteButton.IsEnabled = false;
+            ChangeButton.IsEnabled = false;
         }
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
@@ -73,6 +75,40 @@ namespace Client
         private void AnswersListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             DeleteButton.IsEnabled = true;
+            ChangeButton.IsEnabled = true;
+        }
+
+        private void ChangeButton_Click(object sender, RoutedEventArgs e)
+        {
+            int idx = AnswersListView.SelectedIndex;
+            if (idx == -1)
+            {
+                return;
+            }
+
+            bool isRight = false;
+            if (IsRightCheckBox.IsChecked == true)
+            {
+                isRight = true;
+            }
+
+            Answers[idx].Answer = AnswerTextBox.Text;
+            Answers[idx].IsRight = isRight;
+        }
+
+        private void AnswersListView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            int idx = AnswersListView.SelectedIndex;
+            if (idx == -1)
+            {
+                return;
+            }
+
+            string answer = Answers[idx].Answer;
+            bool isRight = Answers[idx].IsRight;
+
+            AnswerTextBox.Text = answer;
+            IsRightCheckBox.IsChecked = isRight;
         }
     }
 }

@@ -21,8 +21,8 @@
                         Background="#545d6a" Foreground="White" FontSize="18" Click="AddButton_Click"></Button>
                 <Button x:Name="DeleteButton" IsEnabled="False" Content="Delete" DockPanel.Dock="Left" Margin="0 0 5 0"
                         Background="#545d6a" Foreground="White" FontSize="18" Click="DeleteButton_Click"></Button>
-                <Button x:Name="ChangeButton" Content="Change" DockPanel.Dock="Left" Margin="0 0 10 0"
-                        Background="#545d6a" Foreground="White" FontSize="18"></Button>
+                <Button x:Name="ChangeButton" IsEnabled="False" Content="Change" DockPanel.Dock="Left" Margin="0 0 10 0"
+                        Background="#545d6a" Foreground="White" FontSize="18" Click="ChangeButton_Click"></Button>
                 <Button x:Name="SaveButton" Content="Save" DockPanel.Dock="Right" Margin="0 0 0 0"
                         Background="#545d6a" Foreground="White" FontSize="18" Click="SaveButton_Click"></Button>
                 <Rectangle></Rectangle>
@@ -43,7 +43,8 @@
                     
                 </CheckBox>
             </DockPanel>
-            <ListView x:Name="AnswersListView" DockPanel.Dock="Top" Background="#2e3137" Foreground="White" SelectionChanged="AnswersListView_SelectionChanged"
+            <ListView x:Name="AnswersListView" MouseDoubleClick="AnswersListView_MouseDoubleClick" 
+                      DockPanel.Dock="Top" Background="#2e3137" Foreground="White" SelectionChanged="AnswersListView_SelectionChanged"
                       Margin="0 5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
@@ -52,7 +53,7 @@
                 </ListView.ItemContainerStyle>
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Header="Answer" Width="400" DisplayMemberBinding="{Binding Answer}"/>
+                        <GridViewColumn Header="Answer" Width="600" DisplayMemberBinding="{Binding Answer}"/>
                         <GridViewColumn Header="IsRight" Width="100" DisplayMemberBinding="{Binding IsRight}"/>
                     </GridView>
                 </ListView.View>
